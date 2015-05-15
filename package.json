@@ -35,6 +35,6 @@
     "riot games"
   ],
   "scripts": {
-      "reset": "node clean.js"
+      "resetconfig": "node resetconfig.js"
   }
 }
