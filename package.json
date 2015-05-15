@@ -1,35 +1,40 @@
 {
-    "name": "lol-riot-api",
-    "license": "MIT",
-    "description": "A configurable API for League of Legends",
-    "version": "1.0.0",
-    "homepage": "https://github.com/Pupix/lol-riot-api",
-    "author": {
-        "name": "Robert Manolea",
-        "email": "manolea.robert@gmail.com"
-    },
-    "contributors": [
-        {
-            "name": "Robert Manolea",
-            "email": "manolea.robert@gmail.com"
-        }
-    ],
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/Pupix/lol-riot-api.git"
-    },
-    "bugs": {
-        "url": "https://github.com/Pupix/lol-riot-api/issues"
-    },
-    "dependencies": {
-        "dotenv": "*",
-        "expandjs": "*",
-        "express": "*"
-    },
-    "keywords": [
-        "league of legends",
-        "lol",
-        "api",
-        "riot games"
-    ]
+  "name": "lol-riot-api",
+  "license": "MIT",
+  "description": "A configurable API for League of Legends",
+  "version": "1.0.0",
+  "homepage": "https://github.com/Pupix/lol-riot-api",
+  "author": {
+    "name": "Robert Manolea",
+    "email": "manolea.robert@gmail.com"
+  },
+  "contributors": [
+    {
+      "name": "Robert Manolea",
+      "email": "manolea.robert@gmail.com"
+    }
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Pupix/lol-riot-api.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Pupix/lol-riot-api/issues"
+  },
+  "dependencies": {
+    "dotenv": "^1.1.0",
+    "expandjs": "^0.8.0",
+    "express": "^4.12.3",
+    "lol-riot-api-module": "^1.0.0",
+    "prompt": "^0.2.14"
+  },
+  "keywords": [
+    "league of legends",
+    "lol",
+    "api",
+    "riot games"
+  ],
+  "scripts": {
+      "reset": "node clean.js"
+  }
 }

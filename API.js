@@ -3,18 +3,14 @@
 (function () {
     "use strict";
 
-    //Load environment variables
-    require('dotenv').load();
-
     // Vars
-    var exp = require('express'),
+    var prompt = require('prompt'),
+        fs = require('fs'),
+        exp = require('express'),
         XP  = require('expandjs'),
-        API = require('lol-riot-api'),
+        API = require('lol-riot-api-module'),
         app = exp(),
-        api = new API({
-            key: process.env.KEY || null,
-            region: process.env.REGION || null
-        }),
+        api,
 
         // Route map for the relative API methods
         routes = {
@@ -77,28 +73,84 @@
             api[method](opt, cb);
         };
 
-    app.port = process.env.PORT || 3001;
+    // Main function of the API
+    function init() {
 
-    // Default route
-    app.get('/', function (req, res) {
-        res.json({
-            name: 'League of Legends API',
-            version: "1.0.0",
-            author: "Robert Manolea <manolea.robert@gmail.com>",
-            repository: "https://github.com/Pupix/lol-riot-api"
+        require('dotenv').load();
+
+        api = new API({
+            key: process.env.KEY || null,
+            region: process.env.REGION || null
         });
+
+        app.port = process.env.PORT || 3001;
+
+        // Default route
+        app.get('/', function (req, res) {
+            res.json({
+                name: 'League of Legends API',
+                version: "1.0.0",
+                author: "Robert Manolea <manolea.robert@gmail.com>",
+                repository: "https://github.com/Pupix/lol-riot-api"
+            });
+        });
+
+        // Dynamic API routes
+        XP.forEach(routes, function (func, route) {
+            app.get(route, requestHandler);
+        });
+
+        //Error Handling
+        app.use(function (req, res) { res.status(404).json({error: 404, message: "Not Found"}); });
+        app.use(function (req, res) { res.status(500).json({error: 500, message: 'Internal Server Error'}); });
+
+        // Listening
+        app.listen(app.port, function () { console.log('League of Legends API is listening on port ' + app.port); });
+    }
+
+    // Check if environment variables are already present or not
+    fs.stat('.env', function (err) {
+        if (err) {
+            prompt.start();
+            prompt.message = '';
+            prompt.delimiter = '';
+
+            console.log('Config your API');
+
+            prompt.get([
+                {
+                    name: 'key',
+                    description: 'API key:'.white
+                },
+                {
+                    name: 'port',
+                    description: 'API port:'.white
+                },
+                {
+                    name: 'region',
+                    description: 'API region:'.white
+                }
+            ], function (err, res) {
+                if (!err) {
+
+                    var text = '';
+                    text += 'KEY=' + res.key + '\n';
+                    text += 'PORT=' + res.port + '\n';
+                    text += 'REGION=' + res.region + '\n';
+
+                    fs.writeFile('.env', text, function (err) {
+                        if (!err) {
+                            console.log('Config file created successfully');
+                            init();
+                        } else {
+                            console.log('Couldn\'t create the config file');
+                        }
+                    });
+                }
+            });
+        } else {
+            init();
+        }
     });
-
-    // Dynamic API routes
-    XP.forEach(routes, function (func, route) {
-        app.get(route, requestHandler);
-    });
-
-    //Error Handling
-    app.use(function (req, res) { res.status(404).json({error: 404, message: "Not Found"}); });
-    app.use(function (req, res) { res.status(500).json({error: 500, message: 'Internal Server Error'}); });
-
-    // Listening
-    app.listen(app.port, function () { console.log('League of Legends API is listening on port ' + app.port); });
 
 }());
