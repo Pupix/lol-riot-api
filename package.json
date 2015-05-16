@@ -2,7 +2,7 @@
   "name": "lol-riot-api",
   "license": "MIT",
   "description": "A configurable API for League of Legends",
-  "version": "1.0.0",
+  "version": "1.0.3",
   "homepage": "https://github.com/Pupix/lol-riot-api",
   "author": {
     "name": "Robert Manolea",
