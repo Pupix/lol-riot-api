@@ -47,7 +47,7 @@
             '/summoner/:ids/league/entry': 'getLeagueEntryBySummonerIds',
             '/summoner/:ids/masteries': 'getMasteriesBySummonerIds',
             '/summoner/:ids/name': 'getSummonerNamesByIds',
-            '/summoner/:ids/runes': 'getRunesBySummonerId',
+            '/summoner/:ids/runes': 'getRunesBySummonerIds',
             '/summoner/:ids/teams': 'getTeamsBySummonerIds',
             '/summoner/by-name/:names': 'getSummonersByNames',
             '/team/:ids': 'getTeamsByIds',
