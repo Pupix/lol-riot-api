@@ -128,6 +128,7 @@ Retrieves a match by its id.
 
 * `includeTimeline` - Flag indicating whether or not to include match timeline data.
     * *Possible values:* **Anything**.
+    * 
 ---------------------------------------
 
 <a name="/static/champions" />
