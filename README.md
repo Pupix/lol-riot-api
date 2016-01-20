@@ -51,10 +51,14 @@ The API's calls are mapped to various API methods from [Riot Game's documentatio
 * [`/status`](#/status)
 * [`/status/:region`](#/status/:region)
 * [`/summoner/:id/currentGame`](#/summoner/:id/currentGame)
-* [`/summoner/:id/matchHistory`](#/summoner/:id/matchHistory)
+* [`/summoner/:id/matchList`](#/summoner/:id/matchList)
 * [`/summoner/:id/rankedStats`](#/summoner/:id/rankedStats)
 * [`/summoner/:id/recentGames`](#/summoner/:id/recentGames)
 * [`/summoner/:id/statsSummary`](#/summoner/:id/statsSummary)
+* [`/summoner/:id/championMastery`](#/summoner/:id/championMastery)
+* [`/summoner/:id/championMastery/score`](#/summoner/:id/championMastery/score)
+* [`/summoner/:id/championMastery/top`](#/summoner/:id/championMastery/top)
+* [`/summoner/:id/championMastery/:champId`](#/summoner/:id/championMastery/:champId)
 * [`/summoner/:ids`](#/summoner/:ids)
 * [`/summoner/:ids/league`](#/summoner/:ids/league)
 * [`/summoner/:ids/league/entry`](#/summoner/:ids/league/entry)
@@ -365,8 +369,8 @@ Retrieves current game information for the given summoner `id`.
 
 ---------------------------------------
 
-<a name="/summoner/:id/matchHistory" />
-### /summoner/:id/matchHistory
+<a name="/summoner/:id/matchList" />
+### /summoner/:id/matchList
 
 Retrieves match history by summoner `id`.
 
@@ -376,6 +380,12 @@ Retrieves match history by summoner `id`.
 
 * `rankedQueues` - Comma-separated list of ranked queue types to use for fetching games. Non-ranked queue types will be ignored.
   * *Possible values:* **RANKED_SOLO_5x5 | RANKED_TEAM_3x3 | RANKED_TEAM_5x5**.
+
+* `beginTime` - The begin time to use for fetching games specified as epoch milliseconds.
+  * *Possible values:* **Any positive natural number**.
+
+* `endTime` - The end time to use for fetching games specified as epoch milliseconds.
+  * *Possible values:* **Any positive natural number**.
 
 * `beginIndex` - The begin index to use for fetching games.
   * *Possible values:* **Any positive natural number**.
@@ -414,9 +424,38 @@ Retrieves player stats summaries by summoner `id`.
 
 Retrieves player stats summaries by summoner `id`.
 
+---------------------------------------
+
+<a name="/summoner/:id/championMastery" />
+### /summoner/:id/championMastery
+
+Retrieves all champion mastery entries by summoner `id`.
+
+---------------------------------------
+
+<a name="/summoner/:id/championMastery/score" />
+### /summoner/:id/championMastery/score
+
+Retrieves the total champion mastery score by summoner `id`.
+
+---------------------------------------
+
+<a name="/summoner/:id/championMastery/top" />
+### /summoner/:id/championMastery/top
+
+Retrieves the top champion mastery entries by summoner `id`.
+
 **Querystring parameters**
 
+* `count` - The number of entries to retrieve.
+  * *Possible values:* **Any positive natural number**.
 
+---------------------------------------
+
+<a name="/summoner/:id/championMastery/:champId" />
+### /summoner/:id/championMastery/:champId
+
+Retrieves a champion mastery entry by summoner `id` and `champId`.
 
 ---------------------------------------
 
