@@ -22,11 +22,11 @@
     "url": "https://github.com/Pupix/lol-riot-api/issues"
   },
   "dependencies": {
-    "dotenv": "^1.2.0",
+    "dotenv": "2.0.0",
     "expandjs": "^0.10.0",
     "express": "^4.12.3",
     "lol-riot-api-module": "^1.1.0",
-    "prompt": "^0.2.14"
+    "prompt": "^1.0.0"
   },
   "keywords": [
     "league of legends",
