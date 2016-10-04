@@ -8,6 +8,8 @@
         fs = require('fs'),
         exp = require('express'),
         cors = require('cors'),
+        apicache = require('apicache'),
+        cache = apicache.middleware,
         XP  = require('expandjs'),
         API = require('lol-riot-api-module'),
         app = exp(),
@@ -92,10 +94,10 @@
         app.port = process.env.PORT || 3001;
 
         // Default route
-        app.get('/', function (req, res) {
+        app.get('/', cache('1 hour'), function (req, res) {
             res.json({
                 name: 'League of Legends API',
-                version: "1.0.0",
+                version: "1.1.0",
                 author: "Robert Manolea <manolea.robert@gmail.com>",
                 repository: "https://github.com/Pupix/lol-riot-api"
             });
@@ -103,7 +105,7 @@
 
         // Dynamic API routes
         XP.forEach(routes, function (func, route) {
-            app.get(route, requestHandler);
+            app.get(route,cache('5 minutes'), requestHandler);
         });
 
         //Error Handling

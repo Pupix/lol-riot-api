@@ -27,7 +27,8 @@
     "express": "^4.12.3",
     "lol-riot-api-module": "^1.1.0",
     "prompt": "^1.0.0",
-    "cors": "^2.8.1"
+    "cors": "^2.8.1",
+    "apicache": "^0.2.2"
   },
   "keywords": [
     "league of legends",
