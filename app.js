@@ -10,17 +10,10 @@
         cors = require('cors'),
         apicache = require('apicache'),
         cache = apicache.middleware,
-        RateLimit = require('express-rate-limit'),
         XP  = require('expandjs'),
         API = require('lol-riot-api-module'),
         app = exp(),
         api,
-        limiter = new RateLimit({
-          windowMs: 10*60*1000, // 10 minutes
-          max: 150, // limit each IP to 150 requests per windowMs
-          delayMs: 0, // disable delaying - full speed until the max limit is reached
-          statusCode: 429
-        }),
 
         // Route map for the relative API methods
         routes = {
@@ -93,8 +86,6 @@
         require('dotenv').load();
         // Enable CORS
         app.use(cors());
-        //Enabe ratelimit
-        app.use(limiter);
 
         api = new API({
             key: process.env.KEY || null,
@@ -115,7 +106,11 @@
 
         // Dynamic API routes
         XP.forEach(routes, function (func, route) {
-            app.get(route,cache('5 minutes'), requestHandler);
+          if(route.includes("static") || route.includes("champions")){
+            app.get(route,cache('60 minutes'), requestHandler);
+          } else {
+            app.get(route, requestHandler);
+          }
         });
 
         //Error Handling
