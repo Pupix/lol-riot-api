@@ -12,6 +12,10 @@
     {
       "name": "Robert Manolea",
       "email": "manolea.robert@gmail.com"
+    },
+    {
+      "name": "Daniel Sogl",
+      "email": "mytechde@outlook.com"
     }
   ],
   "repository": {
@@ -37,7 +41,7 @@
     "riot games"
   ],
   "scripts": {
-      "start": "node API",
+      "start": "node app",
       "resetconfig": "node resetconfig"
   }
 }
