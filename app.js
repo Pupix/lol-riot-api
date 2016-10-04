@@ -7,6 +7,7 @@
     var prompt = require('prompt'),
         fs = require('fs'),
         exp = require('express'),
+        cors = require('cors'),
         XP  = require('expandjs'),
         API = require('lol-riot-api-module'),
         app = exp(),
@@ -81,6 +82,7 @@
     function init() {
 
         require('dotenv').load();
+        app.use(cors());
 
         api = new API({
             key: process.env.KEY || null,
