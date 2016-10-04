@@ -26,13 +26,14 @@
     "url": "https://github.com/Pupix/lol-riot-api/issues"
   },
   "dependencies": {
+    "apicache": "^0.2.2",
+    "cors": "^2.8.1",
     "dotenv": "2.0.0",
     "expandjs": "^0.10.0",
     "express": "^4.12.3",
+    "express-rate-limit": "^2.5.0",
     "lol-riot-api-module": "^1.1.0",
-    "prompt": "^1.0.0",
-    "cors": "^2.8.1",
-    "apicache": "^0.2.2"
+    "prompt": "^1.0.0"
   },
   "keywords": [
     "league of legends",
@@ -41,7 +42,7 @@
     "riot games"
   ],
   "scripts": {
-      "start": "node app",
-      "resetconfig": "node resetconfig"
+    "start": "node app",
+    "resetconfig": "node resetconfig"
   }
 }

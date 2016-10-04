@@ -10,10 +10,17 @@
         cors = require('cors'),
         apicache = require('apicache'),
         cache = apicache.middleware,
+        RateLimit = require('express-rate-limit'),
         XP  = require('expandjs'),
         API = require('lol-riot-api-module'),
         app = exp(),
         api,
+        limiter = new RateLimit({
+          windowMs: 10*60*1000, // 10 minutes
+          max: 150, // limit each IP to 150 requests per windowMs
+          delayMs: 0, // disable delaying - full speed until the max limit is reached
+          statusCode: 429
+        }),
 
         // Route map for the relative API methods
         routes = {
@@ -84,7 +91,10 @@
     function init() {
 
         require('dotenv').load();
+        // Enable CORS
         app.use(cors());
+        //Enabe ratelimit
+        app.use(limiter);
 
         api = new API({
             key: process.env.KEY || null,
@@ -111,6 +121,7 @@
         //Error Handling
         app.use(function (req, res) { res.status(404).json({error: 404, message: "Not Found"}); });
         app.use(function (req, res) { res.status(500).json({error: 500, message: 'Internal Server Error'}); });
+        app.use(function (req, res) { res.status(429).json({error: 429, message: 'Too many requests'}); });
 
         // Listening
         app.listen(app.port, function () { console.log('League of Legends API is listening on port ' + app.port); });
