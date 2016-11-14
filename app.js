@@ -10,6 +10,7 @@
         cors = require('cors'),
         apicache = require('apicache'),
         cache = apicache.middleware,
+        compression = require('compression'),
         XP  = require('expandjs'),
         API = require('lol-riot-api-module'),
         app = exp(),
@@ -84,8 +85,8 @@
     function init() {
 
         require('dotenv').load();
-        // Enable CORS
-        app.use(cors());
+        app.use(cors()); // use CORS
+        app.use(compression()); // use compression
 
         api = new API({
             key: process.env.KEY || null,
@@ -99,7 +100,7 @@
             res.json({
                 name: 'League of Legends API',
                 version: "1.1.0",
-                author: "Robert Manolea <manolea.robert@gmail.com>",
+                author: "Robert Manolea <manolea.robert@gmail.com> and Daniel Sogl <mytechde@outlook.com>",
                 repository: "https://github.com/Pupix/lol-riot-api"
             });
         });
@@ -107,7 +108,7 @@
         // Dynamic API routes
         XP.forEach(routes, function (func, route) {
           if(route.includes("static") || route.includes("champions")){
-            app.get(route,cache('60 minutes'), requestHandler);
+            app.get(route,cache('60 minutes'), requestHandler); // Chaches static data
           } else {
             app.get(route, requestHandler);
           }
