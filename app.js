@@ -7,6 +7,10 @@
     var prompt = require('prompt'),
         fs = require('fs'),
         exp = require('express'),
+        cors = require('cors'),
+        apicache = require('apicache'),
+        cache = apicache.middleware,
+        compression = require('compression'),
         XP  = require('expandjs'),
         API = require('lol-riot-api-module'),
         app = exp(),
@@ -81,6 +85,8 @@
     function init() {
 
         require('dotenv').load();
+        app.use(cors()); // use CORS
+        app.use(compression()); // use compression
 
         api = new API({
             key: process.env.KEY || null,
@@ -90,23 +96,28 @@
         app.port = process.env.PORT || 3001;
 
         // Default route
-        app.get('/', function (req, res) {
+        app.get('/', cache('1 hour'), function (req, res) {
             res.json({
                 name: 'League of Legends API',
-                version: "1.0.0",
-                author: "Robert Manolea <manolea.robert@gmail.com>",
+                version: "1.1.0",
+                author: "Robert Manolea <manolea.robert@gmail.com> and Daniel Sogl <mytechde@outlook.com>",
                 repository: "https://github.com/Pupix/lol-riot-api"
             });
         });
 
         // Dynamic API routes
         XP.forEach(routes, function (func, route) {
+          if(route.includes("static") || route.includes("champions")){
+            app.get(route,cache('60 minutes'), requestHandler); // Chaches static data
+          } else {
             app.get(route, requestHandler);
+          }
         });
 
         //Error Handling
         app.use(function (req, res) { res.status(404).json({error: 404, message: "Not Found"}); });
         app.use(function (req, res) { res.status(500).json({error: 500, message: 'Internal Server Error'}); });
+        app.use(function (req, res) { res.status(429).json({error: 429, message: 'Too many requests'}); });
 
         // Listening
         app.listen(app.port, function () { console.log('League of Legends API is listening on port ' + app.port); });
