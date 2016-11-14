@@ -11,7 +11,7 @@ lol-riot-api is installable via:
 ## Getting started
 To start the API server run the following command:
 ```js
-node API.js
+node app.js
 ```
 You will have to do a **one time** configuration to be able to use the API. At the prompt you will be asked for the default API `key` to be used for the calls, the `port` on which the API will run and the default `region` to be used for the API calls.
 
@@ -23,7 +23,7 @@ npm run resetconfig
 
 ## Documentation
 
-The API's calls are mapped to various API methods from [Riot Game's documentation](https://developer.riotgames.com/api/methods). All URLs can accept `apiKey` and `region` as **query string parameters**, if you want to do calls for a different **region** or with a **different key** than the specified defaults. 
+The API's calls are mapped to various API methods from [Riot Game's documentation](https://developer.riotgames.com/api/methods). All URLs can accept `apiKey` and `region` as **query string parameters**, if you want to do calls for a different **region** or with a **different key** than the specified defaults.
 
 ### Routes
 
@@ -132,7 +132,7 @@ Retrieves a match by its id.
 
 * `includeTimeline` - Flag indicating whether or not to include match timeline data.
     * *Possible values:* **Anything**.
-    * 
+    *
 ---------------------------------------
 
 <a name="/static/champions" />
@@ -237,7 +237,7 @@ Retrieves map data.
 <a name="/static/masteries" />
 ### /static/masteries
 
-Retrieves the masteries list. 
+Retrieves the masteries list.
 
 **Querystring parameters**
 
@@ -276,7 +276,7 @@ Retrieves realm data.
 <a name="/static/runes" />
 ### /static/runes
 
-Retrieves all runes in game. 
+Retrieves all runes in game.
 
 **Querystring parameters**
 
