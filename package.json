@@ -26,7 +26,7 @@
     "url": "https://github.com/Pupix/lol-riot-api/issues"
   },
   "dependencies": {
-    "apicache": "0.3.5",
+    "apicache": "0.5.3",
     "compression": "^1.6.2",
     "cors": "^2.8.1",
     "dotenv": "2.0.0",
