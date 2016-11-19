@@ -115,9 +115,9 @@
           switch (route) {
             case (route.startsWith("/summoner") || route.startsWith("/team")):
               if(route.endsWith("/currentGame"))
-                app.get(route,cache('1 hour'), requestHandler); // Use the Refrehs URL to reset the chache
+                app.get(route, requestHandler);
               else
-                app.get(route,cache('1 hour'), requestHandler); // Use the Refrehs URL to reset the chache
+                app.get(route, cache('1 hour'), requestHandler);
               break;
             case route.startsWith("/champions") || route.startsWith("/static") || route.startsWith("/match") ||  route.startsWith("/leagues"):
               app.get(route,cache('1 hour'), requestHandler);
