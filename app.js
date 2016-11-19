@@ -64,6 +64,14 @@
 
   // Handler for the request received from the client
   requestHandler = function (req, res) {
+    // Create cache groups
+    if ((req.url.startsWith('/summoner') || req.url.startsWith('/team')) && !req.url.endsWith('/currentGame')){
+      if(req.params.ids != null)
+        req.apicacheGroup = req.params.ids;
+      else if(req.params.id != null)
+        req.apicacheGroup = req.params.id;
+    }
+
     var opt = XP.merge({}, req.query, req.params),
     method = routes[req.route.path],
 
@@ -85,7 +93,6 @@
 
     require('dotenv').load();
     app.use(cors()); // use CORS
-    // app.use(compression()); // use compression
 
     api = new API({
       key: process.env.KEY || null,
@@ -106,20 +113,21 @@
 
     // Chache Clear for update the data
     app.get('/summoner/:id/clear', function (req, res) {
-      apicache.clear(req.params.collection);
+      apicache.clear(req.params.id);
       res.status(404).json({message: "Cache cleared"});
     });
 
     // Dynamic API routes with cache
     XP.forEach(routes, function (func, route) {
-      if(route.startsWith('/summoner') && route.endsWith('/currentGame'))
-      app.get(route, requestHandler);
-      else if (route.startsWith('/summoner') || route.startsWith('/team'))
-      app.get(route, cache('1 hour'), requestHandler);
-      else if (route.startsWith('/static') || route.startsWith('/champions') || route.startsWith('/leagues') || route.startsWith('/match'))
-      app.get(route, cache('12 hours'), requestHandler);
-      else
-      app.get(route, requestHandler);
+      if(route.startsWith('/summoner') && route.endsWith('/currentGame')){
+        app.get(route, requestHandler);
+      }  else if (route.startsWith('/summoner') || route.startsWith('/team')) {
+        app.get(route, cache('1 hour'), requestHandler);
+      } else if (route.startsWith('/static') || route.startsWith('/champions') || route.startsWith('/leagues') || route.startsWith('/match')) {
+        app.get(route, cache('12 hours'), requestHandler);
+      } else {
+        app.get(route, requestHandler);
+      }
     });
 
     //Error Handling
