@@ -113,8 +113,11 @@
         // Dynamic API routes
         XP.forEach(routes, function (func, route) {
           switch (route) {
-            case route.startsWith("/summoner") || route.startsWith("/team"):
-              app.get(route,cache('1 hour'), requestHandler); // Use the Refrehs URL to reset the chache
+            case (route.startsWith("/summoner") || route.startsWith("/team")):
+              if(route.endsWith("/currentGame"))
+                app.get(route,cache('1 hour'), requestHandler); // Use the Refrehs URL to reset the chache
+              else
+                app.get(route,cache('1 hour'), requestHandler); // Use the Refrehs URL to reset the chache
               break;
             case route.startsWith("/champions") || route.startsWith("/static") || route.startsWith("/match") ||  route.startsWith("/leagues"):
               app.get(route,cache('1 hour'), requestHandler);
