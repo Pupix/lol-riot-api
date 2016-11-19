@@ -10,7 +10,6 @@
         cors = require('cors'),
         apicache = require('apicache'),
         cache = apicache.middleware,
-        compression = require('compression'),
         XP  = require('expandjs'),
         API = require('lol-riot-api-module'),
         app = exp(),
@@ -86,7 +85,7 @@
 
         require('dotenv').load();
         app.use(cors()); // use CORS
-        app.use(compression()); // use compression
+        // app.use(compression()); // use compression
 
         api = new API({
             key: process.env.KEY || null,
@@ -96,21 +95,32 @@
         app.port = process.env.PORT || 3001;
 
         // Default route
-        app.get('/', cache('1 hour'), function (req, res) {
+        app.get('/', function (req, res) {
             res.json({
                 name: 'League of Legends API',
-                version: "1.1.0",
+                version: "1.2.0",
                 author: "Robert Manolea <manolea.robert@gmail.com> and Daniel Sogl <mytechde@outlook.com>",
                 repository: "https://github.com/Pupix/lol-riot-api"
             });
         });
 
+        // Chache Clear
+        app.get('/summoner/:id/clear', function (req, res) {
+          apicache.clear(req.params.collection);
+          res.send('Cleared chache');
+        });
+
         // Dynamic API routes
         XP.forEach(routes, function (func, route) {
-          if(route.includes("static") || route.includes("champions")){
-            app.get(route,cache('60 minutes'), requestHandler); // Chaches static data
-          } else {
-            app.get(route, requestHandler);
+          switch (route) {
+            case route.startsWith("/summoner") || route.startsWith("/team"):
+              app.get(route,cache('1 hour'), requestHandler); // Use the Refrehs URL to reset the chache
+              break;
+            case route.startsWith("/champions") || route.startsWith("/static") || route.startsWith("/match") ||  route.startsWith("/leagues"):
+              app.get(route,cache('1 hour'), requestHandler);
+              break;
+              default:
+                app.get(route, cache('1 hour'), requestHandler);
           }
         });
 
