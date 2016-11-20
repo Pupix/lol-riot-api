@@ -1,6 +1,9 @@
 # lol-riot-api
 A configurable League of Legends API. It uses the official [developer's API](https://developer.riotgames.com/) offered by [Riot Games](https://www.riotgames.com), so you will need an API key to be able to use it. [Here](https://developer.riotgames.com/api/methods)'s the complete documentation of their API. In the documentation below there will be references to the official methods used for each route.
 
+[![NSPStatus](https://nodesecurity.io/orgs/mytech/projects/74d09c99-2ca8-4029-b96a-268e35ff2796/badge)](https://nodesecurity.io/orgs/mytech/projects/74d09c99-2ca8-4029-b96a-268e35ff2796)
+[![npm version](https://badge.fury.io/js/lol-riot-api.svg)](https://badge.fury.io/js/lol-riot-api)
+
 ## Download
 lol-riot-api is installable via:
 
