@@ -10,6 +10,8 @@
   cors = require('cors'),
   apicache = require('apicache'),
   cache = apicache.middleware,
+  RateLimit = require('express-rate-limit'),
+  helmet = require('helmet'),
   XP  = require('expandjs'),
   API = require('lol-riot-api-module'),
   app = exp(),
@@ -93,6 +95,17 @@
 
     require('dotenv').load();
     app.use(cors()); // use CORS
+    app.use(helmet()); // Secure the API with helmet. Readmore: https://expressjs.com/en/advanced/best-practice-security.html
+    app.enable('trust proxy'); // only if you're behind a reverse proxy (Heroku, Bluemix, AWS if you use an ELB, custom Nginx setup, etc)
+
+    // Ratelimiter
+    var limiter = new RateLimit({
+      windowMs: 10*60*1000, // 10 minutes
+      max: 100, // limit each IP to 100 requests per windowMs
+      delayMs: 0 // disable delaying - full speed until the max limit is reached
+    });
+    //  apply to all requests
+    app.use(limiter);
 
     api = new API({
       key: process.env.KEY || null,
