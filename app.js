@@ -12,6 +12,9 @@
   cache = apicache.middleware,
   RateLimit = require('express-rate-limit'),
   helmet = require('helmet'),
+  http = require('http'),
+  https = require('https'),
+  cluster = require('cluster'), // Cluster for better performance
   XP  = require('expandjs'),
   API = require('lol-riot-api-module'),
   app = exp(),
@@ -69,9 +72,9 @@
     // Create cache groups
     if ((req.url.startsWith('/summoner') || req.url.startsWith('/team')) && !req.url.endsWith('/currentGame')){
       if(req.params.ids != null)
-        req.apicacheGroup = req.params.ids;
+      req.apicacheGroup = req.params.ids;
       else if(req.params.id != null)
-        req.apicacheGroup = req.params.id;
+      req.apicacheGroup = req.params.id;
     }
 
     var opt = XP.merge({}, req.query, req.params),
@@ -93,64 +96,91 @@
   // Main function of the API
   function init() {
 
-    require('dotenv').load();
-    app.use(cors()); // use CORS
-    app.use(helmet()); // Secure the API with helmet. Readmore: https://expressjs.com/en/advanced/best-practice-security.html
-    app.enable('trust proxy'); // only if you're behind a reverse proxy (Heroku, Bluemix, AWS if you use an ELB, custom Nginx setup, etc)
+    // Code to run if we're in the master process
+    if (cluster.isMaster) {
 
-    // Ratelimiter
-    var limiter = new RateLimit({
-      windowMs: 10*60*1000, // 10 minutes
-      max: 100, // limit each IP to 100 requests per windowMs
-      delayMs: 0 // disable delaying - full speed until the max limit is reached
-    });
-    //  apply to all requests
-    app.use(limiter);
+      // Count the machine's CPUs
+      var cpuCount = require('os').cpus().length;
 
-    api = new API({
-      key: process.env.KEY || null,
-      region: process.env.REGION || null
-    });
-
-    app.port = process.env.PORT || 3001;
-
-    // Default route
-    app.get('/', function (req, res) {
-      res.json({
-        name: 'League of Legends API',
-        version: "1.3.0",
-        author: "Robert Manolea <manolea.robert@gmail.com> and Daniel Sogl <mytechde@outlook.com>",
-        repository: "https://github.com/Pupix/lol-riot-api"
-      });
-    });
-
-    // Chache Clear for update the data
-    app.get('/summoner/:id/clear', function (req, res) {
-      apicache.clear(req.params.id);
-      res.status(404).json({message: "Cache cleared"});
-    });
-
-    // Dynamic API routes with cache
-    XP.forEach(routes, function (func, route) {
-      if(route.startsWith('/summoner') && route.endsWith('/currentGame')){
-        app.get(route, requestHandler);
-      }  else if (route.startsWith('/summoner') || route.startsWith('/team')) {
-        app.get(route, cache('1 hour'), requestHandler);
-      } else if (route.startsWith('/static') || route.startsWith('/champions') || route.startsWith('/leagues') || route.startsWith('/match')) {
-        app.get(route, cache('12 hours'), requestHandler);
-      } else {
-        app.get(route, requestHandler);
+      // Create a worker for each CPU
+      for (var i = 0; i < cpuCount; i += 1) {
+        cluster.fork();
       }
-    });
 
-    //Error Handling
-    app.use(function (req, res) { res.status(404).json({error: 404, message: "Not Found"}); });
-    app.use(function (req, res) { res.status(500).json({error: 500, message: 'Internal Server Error'}); });
-    app.use(function (req, res) { res.status(429).json({error: 429, message: 'Too many requests'}); });
+      // Code to run if we're in a worker process
+    } else {
 
-    // Listening
-    app.listen(app.port, function () { console.log('League of Legends API is listening on port ' + app.port); });
+      require('dotenv').load();
+      app.use(cors()); // use CORS
+      app.use(helmet()); // Secure the API with helmet. Readmore: https://expressjs.com/en/advanced/best-practice-security.html
+      app.enable('trust proxy'); // only if you're behind a reverse proxy (Heroku, Bluemix, AWS if you use an ELB, custom Nginx setup, etc)
+      https.globalAgent.maxSockets = Infinity; // Set Sockets to Maximum
+      http.globalAgent.maxSockets = Infinity; // Set Sockets to Maximum
+
+      // Ratelimiter
+      var limiter = new RateLimit({
+        windowMs: 10*60*1000, // 10 minutes
+        max: 1000, // limit each IP to 100 requests per windowMs
+        delayMs: 0 // disable delaying - full speed until the max limit is reached
+      });
+      //  apply to all requests
+      app.use(limiter);
+
+      api = new API({
+        key: process.env.KEY || null,
+        region: process.env.REGION || null
+      });
+
+      app.port = process.env.PORT || 3001;
+
+      // Default route
+      app.get('/', function (req, res) {
+        res.json({
+          name: 'League of Legends API',
+          version: "1.4.0",
+          author: "Robert Manolea <manolea.robert@gmail.com> and Daniel Sogl <mytechde@outlook.com>",
+          repository: "https://github.com/Pupix/lol-riot-api"
+        });
+      });
+
+      // Chache Clear for update the data
+      app.get('/summoner/:id/clear', function (req, res) {
+        apicache.clear(req.params.id);
+        res.status(404).json({message: "Cache cleared"});
+      });
+
+      // Dynamic API routes with cache
+      XP.forEach(routes, function (func, route) {
+        if(route.startsWith('/summoner') && route.endsWith('/currentGame')){
+          app.get(route, requestHandler);
+        }  else if (route.startsWith('/summoner') || route.startsWith('/team')) {
+          app.get(route, cache('1 hour'), requestHandler);
+        } else if (route.startsWith('/static') || route.startsWith('/champions') || route.startsWith('/leagues') || route.startsWith('/match')) {
+          app.get(route, cache('12 hours'), requestHandler);
+        } else {
+          app.get(route, requestHandler);
+        }
+      });
+
+      //Error Handling
+      app.use(function (req, res) { res.status(404).json({error: 404, message: "Not Found"}); });
+      app.use(function (req, res) { res.status(500).json({error: 500, message: 'Internal Server Error'}); });
+      app.use(function (req, res) { res.status(429).json({error: 429, message: 'Too many requests'}); });
+
+      // Listening
+      app.listen(app.port, function () { console.log('League of Legends API is listening on port ' + app.port); });
+    }
   }
+
+  // Listen for dying workers
+cluster.on('exit', function (worker) {
+
+    // Replace the dead worker,
+    // we're not sentimental
+    console.log('Worker %d died :(', worker.id);
+    cluster.fork();
+
+});
 
   // Check if environment variables are already present or not
   fs.stat('.env', function (err) {
