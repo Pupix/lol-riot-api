@@ -12,8 +12,6 @@
   cache = apicache.middleware,
   RateLimit = require('express-rate-limit'),
   helmet = require('helmet'),
-  http = require('http'),
-  https = require('https'),
   cluster = require('cluster'), // Cluster for better performance
   XP  = require('expandjs'),
   API = require('lol-riot-api-module'),
@@ -114,8 +112,6 @@
       app.use(cors()); // use CORS
       app.use(helmet()); // Secure the API with helmet. Readmore: https://expressjs.com/en/advanced/best-practice-security.html
       app.enable('trust proxy'); // only if you're behind a reverse proxy (Heroku, Bluemix, AWS if you use an ELB, custom Nginx setup, etc)
-      https.globalAgent.maxSockets = Infinity; // Set Sockets to Maximum
-      http.globalAgent.maxSockets = Infinity; // Set Sockets to Maximum
 
       // Ratelimiter
       var limiter = new RateLimit({
@@ -137,7 +133,7 @@
       app.get('/', function (req, res) {
         res.json({
           name: 'League of Legends API',
-          version: "1.4.0",
+          version: "1.4.1",
           author: "Robert Manolea <manolea.robert@gmail.com> and Daniel Sogl <mytechde@outlook.com>",
           repository: "https://github.com/Pupix/lol-riot-api"
         });
