@@ -112,11 +112,6 @@
       app.use(cors()); // use CORS
       app.use(helmet()); // Secure the API with helmet. Readmore: https://expressjs.com/en/advanced/best-practice-security.html
       app.enable('trust proxy'); // only if you're behind a reverse proxy (Heroku, Bluemix, AWS if you use an ELB, custom Nginx setup, etc)
-
-      // Cache only if the stat
-      const onlyStatus200 = req => req.statusCode === 200
-
-      
       // Ratelimiter
       var limiter = new RateLimit({
         windowMs: 10*60*1000, // 10 minutes
@@ -126,6 +121,9 @@
       //  apply to all requests
       app.use(limiter);
 
+      // Set Cache Options
+      apicache.options({statusCodes:{exclude:[404,429,500],include:[200,304]}});
+
       api = new API({
         key: process.env.KEY || null,
         region: process.env.REGION || null
@@ -134,8 +132,8 @@
       app.port = process.env.PORT || 3001;
 
       // Default route
-      app.get('/', function (req, res) {
-        res.json({
+      app.get('/', cache('1 day'), function (req, res) {
+        res.status(200).json({
           name: 'League of Legends API',
           version: "1.4.1",
           author: "Robert Manolea <manolea.robert@gmail.com> and Daniel Sogl <mytechde@outlook.com>",
@@ -154,9 +152,9 @@
         if(route.startsWith('/summoner') && route.endsWith('/currentGame')){
           app.get(route, requestHandler);
         }  else if (route.startsWith('/summoner') || route.startsWith('/team')) {
-          app.get(route, cache('1 day', onlyStatus200), requestHandler);
+          app.get(route, cache('1 day'), requestHandler);
         } else if (route.startsWith('/static') || route.startsWith('/champions') || route.startsWith('/leagues') || route.startsWith('/match')) {
-          app.get(route, cache('12 hours', onlyStatus200), requestHandler);
+          app.get(route, cache('12 hours'), requestHandler);
         } else {
           app.get(route, requestHandler);
         }
