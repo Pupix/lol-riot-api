@@ -113,6 +113,10 @@
       app.use(helmet()); // Secure the API with helmet. Readmore: https://expressjs.com/en/advanced/best-practice-security.html
       app.enable('trust proxy'); // only if you're behind a reverse proxy (Heroku, Bluemix, AWS if you use an ELB, custom Nginx setup, etc)
 
+      // Cache only if the stat
+      const onlyStatus200 = req => req.statusCode === 200
+
+      
       // Ratelimiter
       var limiter = new RateLimit({
         windowMs: 10*60*1000, // 10 minutes
@@ -142,7 +146,7 @@
       // Chache Clear for update the data
       app.get('/summoner/:id/clear', function (req, res) {
         apicache.clear(req.params.id);
-        res.status(404).json({message: "Cache cleared"});
+        res.status(200).json({message: "Cache cleared"});
       });
 
       // Dynamic API routes with cache
@@ -150,9 +154,9 @@
         if(route.startsWith('/summoner') && route.endsWith('/currentGame')){
           app.get(route, requestHandler);
         }  else if (route.startsWith('/summoner') || route.startsWith('/team')) {
-          app.get(route, cache('1 hour'), requestHandler);
+          app.get(route, cache('1 day', onlyStatus200), requestHandler);
         } else if (route.startsWith('/static') || route.startsWith('/champions') || route.startsWith('/leagues') || route.startsWith('/match')) {
-          app.get(route, cache('12 hours'), requestHandler);
+          app.get(route, cache('12 hours', onlyStatus200), requestHandler);
         } else {
           app.get(route, requestHandler);
         }
