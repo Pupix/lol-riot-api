@@ -112,7 +112,6 @@
       app.use(cors()); // use CORS
       app.use(helmet()); // Secure the API with helmet. Readmore: https://expressjs.com/en/advanced/best-practice-security.html
       app.enable('trust proxy'); // only if you're behind a reverse proxy (Heroku, Bluemix, AWS if you use an ELB, custom Nginx setup, etc)
-
       // Ratelimiter
       var limiter = new RateLimit({
         windowMs: 10*60*1000, // 10 minutes
@@ -122,6 +121,9 @@
       //  apply to all requests
       app.use(limiter);
 
+      // Set Cache Options
+      apicache.options({statusCodes:{exclude:[404,429,500],include:[200,304]}});
+
       api = new API({
         key: process.env.KEY || null,
         region: process.env.REGION || null
@@ -130,8 +132,8 @@
       app.port = process.env.PORT || 3001;
 
       // Default route
-      app.get('/', function (req, res) {
-        res.json({
+      app.get('/', cache('1 day'), function (req, res) {
+        res.status(200).json({
           name: 'League of Legends API',
           version: "1.4.1",
           author: "Robert Manolea <manolea.robert@gmail.com> and Daniel Sogl <mytechde@outlook.com>",
@@ -142,7 +144,7 @@
       // Chache Clear for update the data
       app.get('/summoner/:id/clear', function (req, res) {
         apicache.clear(req.params.id);
-        res.status(404).json({message: "Cache cleared"});
+        res.status(200).json({message: "Cache cleared"});
       });
 
       // Dynamic API routes with cache
@@ -150,7 +152,7 @@
         if(route.startsWith('/summoner') && route.endsWith('/currentGame')){
           app.get(route, requestHandler);
         }  else if (route.startsWith('/summoner') || route.startsWith('/team')) {
-          app.get(route, cache('1 hour'), requestHandler);
+          app.get(route, cache('1 day'), requestHandler);
         } else if (route.startsWith('/static') || route.startsWith('/champions') || route.startsWith('/leagues') || route.startsWith('/match')) {
           app.get(route, cache('12 hours'), requestHandler);
         } else {
@@ -170,12 +172,7 @@
 
   // Listen for dying workers
 cluster.on('exit', function (worker) {
-
-    // Replace the dead worker,
-    // we're not sentimental
-    console.log('Worker %d died :(', worker.id);
-    cluster.fork();
-
+  cluster.fork();
 });
 
   // Check if environment variables are already present or not
