@@ -1,15 +1,37 @@
 # lol-riot-api
 A configurable League of Legends API. It uses the official [developer's API](https://developer.riotgames.com/) offered by [Riot Games](https://www.riotgames.com), so you will need an API key to be able to use it. [Here](https://developer.riotgames.com/api/methods)'s the complete documentation of their API. In the documentation below there will be references to the official methods used for each route.
 
-[![NSPStatus](https://nodesecurity.io/orgs/mytech/projects/74d09c99-2ca8-4029-b96a-268e35ff2796/badge)](https://nodesecurity.io/orgs/mytech/projects/74d09c99-2ca8-4029-b96a-268e35ff2796)
-[![npm version](https://badge.fury.io/js/lol-riot-api.svg)](https://badge.fury.io/js/lol-riot-api)
-
 ## Download
 lol-riot-api is installable via:
 
 - [GitHub](https://github.com/Pupix/lol-riot-api) `git clone https://github.com/Pupix/lol-riot-api.git`
 - [npm](https://www.npmjs.com/): `npm install lol-riot-api`
 
+## Cache / Reds
+The api use Redis and api-cache to cache the data.
+If you don't want to use Redis change the following line from
+
+```js
+apicache.options({
+    redisClient: redis.createClient()
+}, {
+    statusCodes: {
+        exclude: [404, 429, 500],
+        include: [200, 304]
+    }
+}).middleware;
+```
+
+to
+
+```js
+apicache.options({
+    statusCodes: {
+        exclude: [404, 429, 500],
+        include: [200, 304]
+    }
+    });
+```
 
 ## Getting started
 To start the API server run the following command:
@@ -30,8 +52,6 @@ The API's calls are mapped to various API methods from [Riot Game's documentatio
 
 ### Routes
 
-* [`/champions`](#/champions)
-* [`/champions/:id`](#/champions/:id)
 * [`/featuredGames`](#/featuredGames)
 * [`/leagues/challenger`](#/leagues/challenger)
 * [`/leagues/master`](#/leagues/master)
@@ -45,6 +65,7 @@ The API's calls are mapped to various API methods from [Riot Game's documentatio
 * [`/static/maps`](#/static/maps)
 * [`/static/masteries`](#/static/masteries)
 * [`/static/masteries/:id`](#/static/masteries/:id)
+* [`/static/profile-icons`](#/static/profile-icons)
 * [`/static/realms`](#/static/realms)
 * [`/static/runes`](#/static/runes)
 * [`/static/runes/:id`](#/static/runes/:id)
@@ -53,45 +74,20 @@ The API's calls are mapped to various API methods from [Riot Game's documentatio
 * [`/static/versions`](#/static/versions)
 * [`/status`](#/status)
 * [`/status/:region`](#/status/:region)
-* [`/summoner/:id/currentGame`](#/summoner/:id/currentGame)
+* [`/summoner/:id/activeGame`](#/summoner/:id/activeGame)
 * [`/summoner/:id/matchList`](#/summoner/:id/matchList)
-* [`/summoner/:id/rankedStats`](#/summoner/:id/rankedStats)
 * [`/summoner/:id/recentGames`](#/summoner/:id/recentGames)
-* [`/summoner/:id/statsSummary`](#/summoner/:id/statsSummary)
 * [`/summoner/:id/championMastery`](#/summoner/:id/championMastery)
 * [`/summoner/:id/championMastery/score`](#/summoner/:id/championMastery/score)
-* [`/summoner/:id/championMastery/top`](#/summoner/:id/championMastery/top)
 * [`/summoner/:id/championMastery/:champId`](#/summoner/:id/championMastery/:champId)
-* [`/summoner/:ids`](#/summoner/:ids)
-* [`/summoner/:ids/league`](#/summoner/:ids/league)
-* [`/summoner/:ids/league/entry`](#/summoner/:ids/league/entry)
-* [`/summoner/:ids/masteries`](#/summoner/:ids/masteries)
-* [`/summoner/:ids/name`](#/summoner/:ids/name)
-* [`/summoner/:ids/runes`](#/summoner/:ids/runes)
-* [`/summoner/:ids/teams`](#/summoner/:ids/teams)
-* [`/summoner/by-name/:names`](#/summoner/by-name/:names)
-* [`/team/:ids`](#/team/:ids)
-* [`/team/:ids/league`](#/team/:ids/league)
-* [`/team/:ids/league/entry`](#/team/:ids/league/entry)
-
----------------------------------------
-
-<a name="/champions" />
-### /champions
-
-Retrieves basic information about all the champions available in the game.
-
-**Querystring parameters**
-
-* `freeToPlay` - Optional filter param to retrieve only free to play champions.
-  * *Possible values:* **Anything**.
-
----------------------------------------
-
-<a name="/champions/:id" />
-### /champions/:id
-
-Retrieves basic information about a champion available in the game by its id.
+* [`/summoner/:id`](#/summoner/:id)
+* [`/summoner/:id/clear`](#/summoner/:id/clear)
+* [`/summoner/by-name/:name`](#/summoner/by-name/:name)
+* [`/summoner/:id/league`](#/summoner/:id/league)
+* [`/summoner/:id/league/entry`](#/summoner/:id/league/entry)
+* [`/summoner/:id/masteries`](#/summoner/:id/masteries)
+* [`/summoner/:id/name`](#/summoner/:id/name)
+* [`/summoner/:id/runes`](#/summoner/:id/runes)
 
 ---------------------------------------
 
@@ -149,7 +145,7 @@ Retrieves champion list.
 
 * `version` - Data dragon version for returned data. If not specified, the latest version for the region is used. List of valid versions can be obtained from the /versions endpoint.
 
-* `dataById` - If specified as true, the returned data map will use the champions' IDs as the keys. If not specified or specified as false, the returned data map will use the champions' keys instead.
+* `dataById` - If specified as true, the returned data map will use the champions' id as the keys. If not specified or specified as false, the returned data map will use the champions' keys instead.
 
 * `champData` - Tags to return additional data. Only *type*, *version*, *data*, *id*, *key*, *name*, and *title* are returned by default if this parameter isn't specified. To return all additional data, use the tag **all**.
   * *Possible values:* **all** | **allytips** | **altimages** | **blurb** | **enemytips** | **image** | **info** | **lore** | **partype** | **passive** | **recommended** | **skins** | **spells** | **stats** | **tags**.
@@ -184,7 +180,7 @@ Retrieves a list of all items in the game.
 * `version` - Data dragon version for returned data. If not specified, the latest version for the region is used. List of valid versions can be obtained from the /versions endpoint.
 
 * `itemListData` - Tags to return additional data. Only *type*, *version*, *basic*, *data*, *id*, *name*, *plaintext*, *group*, and *description* are returned by default if this parameter isn't specified. To return all additional data, use the tag **all**.
-  * *Possible values:* ***all | colloq | consumeOnFull | consumed | depth | from | gold | groups | hideFromAll | image | inStore | into | maps | requiredChampion | sanitizedDescription | specialRecipe | stacks | stats | tags | tree**.
+  **Possible values:* ***all | colloq | consumeOnFull | consumed | depth | from | gold | groups | hideFromAll | image | inStore | into | maps | requiredChampion | sanitizedDescription | specialRecipe | stacks | stats | tags | tree**.
 
 ---------------------------------------
 
@@ -269,6 +265,13 @@ Retrieves a mastery item by `id`.
 
 ---------------------------------------
 
+<a name="/static/profile-icons" />
+### /static/profile-icons
+
+Retrieves profile icons data.
+
+---------------------------------------
+
 <a name="/static/realms" />
 ### /static/realms
 
@@ -319,7 +322,7 @@ Retrieves all summoner spells in game.
 
 * `version` - Data dragon version for returned data. If not specified, the latest version for the region is used. List of valid versions can be obtained from the /versions endpoint.
 
-* `dataById` - If specified, the returned data map will use the spells' IDs as the keys. If not specified or specified as false, the returned data map will use the spells' keys instead.
+* `dataById` - If specified, the returned data map will use the spells' id as the keys. If not specified or specified as false, the returned data map will use the spells' keys instead.
     * *Possible values:* **Anything**
 
 * `spellData` - Tags to return additional data. Only *id*, *key*, *name*, *description*, and *summonerLevel* are returned by default if this parameter isn't specified. To return all additional data, use the tag **all**.
@@ -358,17 +361,10 @@ Retrieves the list of available regions.
 
 ---------------------------------------
 
-<a name="/status/:region" />
-### /status/:region
-
-Retrieves the data available on the status.leagueoflegends.com website for the given `region`.
-
----------------------------------------
-
-<a name="/summoner/:id/currentGame" />
+<a name="/summoner/:id/activeGame" />
 ### /summoner/:id/currentGame
 
-Retrieves current game information for the given summoner `id`.
+Retrieves active game information for the given summoner `id`.
 
 ---------------------------------------
 
@@ -379,7 +375,7 @@ Retrieves match history by summoner `id`.
 
 **Querystring parameters**
 
-* `championIds` - Comma-separated list of champion IDs to use for fetching games.
+* `championid` - Comma-separated list of champion id to use for fetching games.
 
 * `rankedQueues` - Comma-separated list of ranked queue types to use for fetching games. Non-ranked queue types will be ignored.
   * *Possible values:* **RANKED_SOLO_5x5 | RANKED_TEAM_3x3 | RANKED_TEAM_5x5**.
@@ -395,18 +391,6 @@ Retrieves match history by summoner `id`.
 
 * `endIndex` - The end index to use for fetching games.
   * *Possible values:* **Any positive natural number**.
-
----------------------------------------
-
-<a name="/summoner/:id/rankedStats" />
-### /summoner/:id/rankedStats
-
-Retrieves ranked stats by summoner `id`.
-
-**Querystring parameters**
-
-* `season` - If specified, stats for the given season are returned. Otherwise, stats for the current season are returned.
-  * *Possible values:* **SEASON3 | SEASON2014 | SEASON2015**.
 
 ---------------------------------------
 
@@ -443,18 +427,6 @@ Retrieves the total champion mastery score by summoner `id`.
 
 ---------------------------------------
 
-<a name="/summoner/:id/championMastery/top" />
-### /summoner/:id/championMastery/top
-
-Retrieves the top champion mastery entries by summoner `id`.
-
-**Querystring parameters**
-
-* `count` - The number of entries to retrieve.
-  * *Possible values:* **Any positive natural number**.
-
----------------------------------------
-
 <a name="/summoner/:id/championMastery/:champId" />
 ### /summoner/:id/championMastery/:champId
 
@@ -462,101 +434,63 @@ Retrieves a champion mastery entry by summoner `id` and `champId`.
 
 ---------------------------------------
 
-<a name="/summoner/:ids" />
-### /summoner/:ids
+<a name="/summoner/:id" />
+### /summoner/:id
 
-Retrieves summoner objects mapped by summoner *id* for a given list of summoner `ids`.
+Retrieves summoner objects mapped by summoner *id* for a given list of summoner `id`.
 
-The `ids` passed must be comma-separated. Maximum allowed at once is 40.
-
----------------------------------------
-
-<a name="/summoner/:ids/league" />
-### /summoner/:ids/league
-
-Retrieves leagues mapped by summoner *id* for a given list of summoner `ids`.
-
-The `ids` passed must be comma-separated. Maximum allowed at once is 10.
+The `id` passed must be comma-separated. Maximum allowed at once is 40.
 
 ---------------------------------------
 
-<a name="/summoner/:ids/league/entry" />
-### /summoner/:ids/league/entry
+<a name="/summoner/:id/clear" />
+### /summoner/:id/clear
 
-Retrieves league entries mapped by summoner *id* for a given list of summoner `ids`.
-
-The `ids` passed must be comma-separated. Maximum allowed at once is 10.
+Clear the cache by summoner *id* for a given summoner `id`.
 
 ---------------------------------------
 
-<a name="/summoner/:ids/masteries" />
-### /summoner/:ids/masteries
+<a name="/summoner/by-name/:name" />
+### /summoner/by-name/:name
 
-Retrieves mastery pages mapped by summoner *id* for a given list of summoner `ids`.
+Retrieves summoner objects mapped by **standardized summoner name** for a given list of summoner `name`.
 
-The `ids` must be comma-separated. Maximum allowed at once is 40.
+A **standardized summoner name** is the summoner name in all lower case and with spaces removed. The API will also accept **standardized summoner name** as valid parameters, although they are not required.
 
----------------------------------------
-
-<a name="/summoner/:ids/name" />
-### /summoner/:ids/name
-
-Retrieves summmoner names mapped by summoner *id* for a given list of summoner `ids`.
-
-The `ids` must be comma-separated. Maximum allowed at once is 40.
+The `name` or `standardized summoner name` passed must be comma-separated. Maximum allowed at once is 40.
 
 ---------------------------------------
 
-<a name="/summoner/:ids/runes" />
-### /summoner/:ids/runes
+<a name="/summoner/:id/league" />
+### /summoner/:id/league
 
-Retrieves rune pages mapped by summoner *id* for a given list of summoner `ids`.
+Retrieves leagues mapped by summoner *id* for a given list of summoner `id`.
 
-The `ids` must be comma-separated. Maximum allowed at once is 40.
-
----------------------------------------
-
-<a name="/summoner/:ids/teams" />
-### /summoner/:ids/teams
-
-Retrieves teams mapped by summoner *id* for a given list of summoner `ids`.
-
-The `ids` must be comma-separated. Maximum allowed at once is 10.
+The `id` passed must be comma-separated. Maximum allowed at once is 10.
 
 ---------------------------------------
 
-<a name="/summoner/by-name/:names" />
-### /summoner/by-name/:names
+<a name="/summoner/:id/league/entry" />
+### /summoner/:id/league/entry
 
-Retrieves summoner objects mapped by **standardized summoner name** for a given list of summoner `names`.
+Retrieves league entries mapped by summoner *id* for a given list of summoner `id`.
 
-A **standardized summoner name** is the summoner name in all lower case and with spaces removed. The API will also accept **standardized summoner names** as valid parameters, although they are not required.
-
-The `names` or `standardized summoner names` passed must be comma-separated. Maximum allowed at once is 40.
+The `id` passed must be comma-separated. Maximum allowed at once is 10.
 
 ---------------------------------------
 
-<a name="/team/:ids" />
-### /team/:ids
+<a name="/summoner/:id/masteries" />
+### /summoner/:id/masteries
 
-Retrieves teams mapped by team *id* for a given list of team `ids`.
+Retrieves mastery pages mapped by summoner *id* for a given list of summoner `id`.
 
-The `ids` passed must be comma-separated. Maximum allowed at once is 10.
-
----------------------------------------
-
-<a name="/team/:ids/league" />
-### /team/:ids/league
-
-Retrieves leagues mapped by team *id* for a given list of team `ids`.
-
-The `ids` passed must be comma-separated. Maximum allowed at once is 10.
+The `id` must be comma-separated. Maximum allowed at once is 40.
 
 ---------------------------------------
 
-<a name="/team/:ids/league/entry" />
-### /team/:ids/league/entry
+<a name="/summoner/:id/runes" />
+### /summoner/:id/runes
 
-Retrieves league entries mapped by team *id* for a given list of team `ids`.
+Retrieves rune pages mapped by summoner *id* for a given list of summoner `id`.
 
-The `ids` passed must be comma-separated. Maximum allowed at once is 10.
+The `id` must be comma-separated. Maximum allowed at once is 40.
