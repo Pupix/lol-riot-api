@@ -141,7 +141,7 @@
       });
 
       // Dynamic API routes with cache
-      XP.forEach(routes, function(func, route) {
+      Object.keys(routes).forEach(function(route) {
         if (route.startsWith('/summoner') && route.endsWith('/currentGame')) {
           app.get(route, requestHandler);
         } else if (route.startsWith('/summoner') || route.startsWith('/team')) {
