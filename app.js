@@ -111,6 +111,8 @@
 
       // Set Cache Options
       apicache.options({
+          redisClient: redis.createClient()
+      },{
           statusCodes: {
               exclude: [404, 429, 500],
               include: [200, 304]
