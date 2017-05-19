@@ -72,7 +72,11 @@
         noOptRegExp = /^\/status\/?$/,
         noOpt = !!req.route.path.match(noOptRegExp),
         cb = function(err, data) {
-          res.json(err || data);
+          if (err) {
+            res.json({ code: err.code, message: err.message });
+          } else {
+            res.json(data);
+          }
         };
 
       opt = noOpt ? cb : opt;
@@ -107,8 +111,6 @@
 
       // Set Cache Options
       apicache.options({
-          redisClient: redis.createClient()
-      }, {
           statusCodes: {
               exclude: [404, 429, 500],
               include: [200, 304]
