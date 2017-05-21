@@ -63,11 +63,12 @@ The API's calls are mapped to various API methods from [Riot Game's documentatio
 * [`/summoner/:summonerId/leagues/positions`](#/summoner/:summonerId/leagues/positions)
 * [`/summoner/:summonerId/masteries`](#/summoner/:summonerId/masteries)
 * [`/summoner/:summonerId/runes`](#/summoner/:summonerId/runes)
-* [`/cache/clearAccount/:accountId`](#/cache/clearAccount/:accountId)
-* [`/cache/clearSummoner/:summonerId`](#/cache/clearSummoner/:summonerId)
+* [`/clear-cache/account/:accountId`](#/clear-cache/account/:accountId)
+* [`/clear-cache/summoner/:summonerId`](#/clear-cache/summoner/:summonerId)
 ---------------------------------------
 
 <a name="/account/:accountId" />
+
 ### /account/:accountId
 
 Retrieves a summoner by `accountId`.
@@ -75,6 +76,7 @@ Retrieves a summoner by `accountId`.
 ---------------------------------------
 
 <a name="/account/:accountId/matchlist" />
+
 ### /account/:accountId/matchlist
 
 Retrieves matchlist by `accountId`.
@@ -101,6 +103,7 @@ Retrieves matchlist by `accountId`.
 ---------------------------------------
 
 <a name="/account/:accountId/matchlist/recent" />
+
 ### /account/:accountId/matchlist/recent
 
 Retrieves matchlist for last 20 matches played on given `accountId`.
@@ -108,6 +111,7 @@ Retrieves matchlist for last 20 matches played on given `accountId`.
 ---------------------------------------
 
 <a name="/champions" />
+
 ### /champions
 
 Retrieves the status of all champions.
@@ -119,7 +123,8 @@ Retrieves the status of all champions.
 
 ---------------------------------------
 
-<a name="/champions/id" />
+<a name="/champions/:id" />
+
 ### /champions/:id
 
 Retrieves the status of given champion `id`.
@@ -127,6 +132,7 @@ Retrieves the status of given champion `id`.
 ---------------------------------------
 
 <a name="/featured-games" />
+
 ### /featured-games
 
 Retrieves a list of featured games.
@@ -134,6 +140,7 @@ Retrieves a list of featured games.
 ---------------------------------------
 
 <a name="/leagues/challenger" />
+
 ### /leagues/challenger
 
 Retrieves the challenger tier leagues
@@ -146,6 +153,7 @@ Retrieves the challenger tier leagues
 ---------------------------------------
 
 <a name="/leagues/master" />
+
 ### /leagues/master
 
 Retrieves the master tier leagues
@@ -158,6 +166,7 @@ Retrieves the master tier leagues
 ---------------------------------------
 
 <a name="/matches/:id" />
+
 ### /matches/:id
 
 Retrieves a match by its `id`.
@@ -165,6 +174,7 @@ Retrieves a match by its `id`.
 ---------------------------------------
 
 <a name="/matches/:matchId/timeline" />
+
 ### /matches/:matchId/timeline
 
 Retrieves a match's timeline by `matchId`.
@@ -172,6 +182,7 @@ Retrieves a match's timeline by `matchId`.
 ---------------------------------------
 
 <a name="/static/champions" />
+
 ### /static/champions
 
 Retrieves champion list.
@@ -190,6 +201,7 @@ Retrieves champion list.
 ---------------------------------------
 
 <a name="/static/champions/:id" />
+
 ### /static/champions/:id
 
 Retrieves a champion by its id.
@@ -206,6 +218,7 @@ Retrieves a champion by its id.
 ---------------------------------------
 
 <a name="/static/items" />
+
 ### /static/items
 
 Retrieves a list of all items in the game.
@@ -222,6 +235,7 @@ Retrieves a list of all items in the game.
 ---------------------------------------
 
 <a name="/static/items/:id" />
+
 ### /static/items/:id
 
 Retrieves an item by `id`.
@@ -238,6 +252,7 @@ Retrieves an item by `id`.
 ---------------------------------------
 
 <a name="/static/languages" />
+
 ### /static/languages
 
 Retrieves supported languages data.
@@ -251,6 +266,7 @@ Retrieves supported languages data.
 ---------------------------------------
 
 <a name="/static/language-strings" />
+
 ### /static/language-strings
 
 Retrieves language string data.
@@ -264,6 +280,7 @@ Retrieves language string data.
 ---------------------------------------
 
 <a name="/static/maps" />
+
 ### /static/maps
 
 Retrieves map data.
@@ -277,6 +294,7 @@ Retrieves map data.
 ---------------------------------------
 
 <a name="/static/masteries" />
+
 ### /static/masteries
 
 Retrieves the masteries list.
@@ -293,6 +311,7 @@ Retrieves the masteries list.
 ---------------------------------------
 
 <a name="/static/masteries/:id" />
+
 ### /static/masteries/:id
 
 Retrieves a mastery item by `id`.
@@ -309,6 +328,7 @@ Retrieves a mastery item by `id`.
 ---------------------------------------
 
 <a name="/static/profile-icons" />
+
 ### /static/profile-icons
 
 Retrieves profile icons data.
@@ -322,6 +342,7 @@ Retrieves profile icons data.
 ---------------------------------------
 
 <a name="/static/realms" />
+
 ### /static/realms
 
 Retrieves realm data.
@@ -335,6 +356,7 @@ Retrieves realm data.
 ---------------------------------------
 
 <a name="/static/runes" />
+
 ### /static/runes
 
 Retrieves all runes in game.
@@ -351,6 +373,7 @@ Retrieves all runes in game.
 ---------------------------------------
 
 <a name="/static/runes/:id" />
+
 ### /static/runes/:id
 
 Retrieves a rune by `id`.
@@ -367,6 +390,7 @@ Retrieves a rune by `id`.
 ---------------------------------------
 
 <a name="/static/spells" />
+
 ### /static/spells
 
 Retrieves all summoner spells in game.
@@ -387,6 +411,7 @@ Retrieves all summoner spells in game.
 ---------------------------------------
 
 <a name="/static/spells/:id" />
+
 ### /static/spells/:id
 
 Retrieves a summoner spell by `id`.
@@ -403,6 +428,7 @@ Retrieves a summoner spell by `id`.
 ---------------------------------------
 
 <a name="/static/versions" />
+
 ### /static/versions
 
 Retrieves version data.
@@ -410,6 +436,7 @@ Retrieves version data.
 ---------------------------------------
 
 <a name="/status" />
+
 ### /status
 
 Retrieves the list of available regions.
@@ -417,6 +444,7 @@ Retrieves the list of available regions.
 ---------------------------------------
 
 <a name="/summoner" />
+
 ### /summoner
 
 Retrieves a summoner  based on `name`, `id` or `accountId`.
@@ -432,6 +460,7 @@ Retrieves a summoner  based on `name`, `id` or `accountId`.
 ---------------------------------------
 
 <a name="/summoner/:id" />
+
 ### /summoner/:id
 
 Retrieves a summoner by `id`.
@@ -439,6 +468,7 @@ Retrieves a summoner by `id`.
 ---------------------------------------
 
 <a name="/summoner/:summonerId/activeGame" />
+
 ### /summoner/:summonerId/currentGame
 
 Retrieves active game information for the given `summonerId`.
@@ -446,6 +476,7 @@ Retrieves active game information for the given `summonerId`.
 ---------------------------------------
 
 <a name="/summoner/:summonerId/championMastery" />
+
 ### /summoner/:summonerId/championMastery
 
 Retrieves all champion mastery entries by `summonerId`.
@@ -453,6 +484,7 @@ Retrieves all champion mastery entries by `summonerId`.
 ---------------------------------------
 
 <a name="/summoner/:summonerId/championMastery/:championId" />
+
 ### /summoner/:summonerId/championMastery/:championId
 
 Retrieves a champion mastery entry by `summonerId` and `championId`.
@@ -460,6 +492,7 @@ Retrieves a champion mastery entry by `summonerId` and `championId`.
 ---------------------------------------
 
 <a name="/summoner/:summonerId/championMastery/score" />
+
 ### /summoner/:summonerId/championMastery/score
 
 Retrieves the total champion mastery score by `summonerId`.
@@ -467,6 +500,7 @@ Retrieves the total champion mastery score by `summonerId`.
 ---------------------------------------
 
 <a name="/summoner/:summonerId/league" />
+
 ### /summoner/:summonerId/leagues
 
 Retrieves leagues in all queues for a given `summonerId`.
@@ -474,6 +508,7 @@ Retrieves leagues in all queues for a given `summonerId`.
 ---------------------------------------
 
 <a name="/summoner/:summonerId/league/entry" />
+
 ### /summoner/:summonerId/leagues/positions
 
 Retrieves league positions in all queues for a given `summonerId`.
@@ -481,6 +516,7 @@ Retrieves league positions in all queues for a given `summonerId`.
 ---------------------------------------
 
 <a name="/summoner/:summonerId/masteries" />
+
 ### /summoner/:summonerId/masteries
 
 Get mastery pages for a given `summonerId`.
@@ -488,21 +524,24 @@ Get mastery pages for a given `summonerId`.
 ---------------------------------------
 
 <a name="/summoner/:summonerId/runes" />
+
 ### /summoner/:summonerId/runes
 
 Get rune pages for a given `summonerId`.
 
 ---------------------------------------
 
-<a name="/cache/clearAccount/:accountId" />
-### /cache/clearAccount/:accountId
+<a name="/clear-cache/account/:accountId" />
+
+### /clear-cache/account/:accountId
 
 Clears the cache for a given `accountId`.
 
 ---------------------------------------
 
-<a name="/cache/clearSummoner/:summonerId" />
-### /cache/clearSummoner/:summonerId
+<a name="/clear-cache/summoner/:summonerId" />
+
+### /clear-cache/summoner/:summonerId
 
 Clears the cache for a given `summonerId`.
 
