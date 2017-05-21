@@ -1,21 +1,6 @@
-/*jslint browser: true, devel: true, node: true, ass: true, nomen: true, unparam: true, indent: 4 */
+const ConfigManager = require('./lib/configManager');
 
-(function () {
-    "use strict";
+ConfigManager.remove()
+    .then(() => console.log('Config has been removed successfully'))
+    .catch(() => console.log('Couldn\'t remove config'));
 
-    // Vars
-    var fs = require('fs');
-
-    fs.stat('.env', function (err) {
-        if (!err) {
-            fs.unlink('.env', function (err) {
-                if (!err) {
-                    console.log('Config file deleted successfully');
-                } else {
-                    console.log('Couldn\'t delete the config file');
-                }
-            });
-        }
-    });
-
-}());

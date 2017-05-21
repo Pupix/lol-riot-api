@@ -2,12 +2,9 @@
   "name": "lol-riot-api",
   "license": "MIT",
   "description": "A configurable League of Legends API",
-  "version": "2.0.4",
+  "version": "3.0.0",
   "homepage": "https://github.com/Pupix/lol-riot-api",
-  "author": {
-    "name": "Robert Manolea",
-    "email": "manolea.robert@gmail.com"
-  },
+  "author": "Robert Manolea <manolea.robert@gmail.com>",
   "contributors": [
     {
       "name": "Robert Manolea",
@@ -26,16 +23,16 @@
     "url": "https://github.com/Pupix/lol-riot-api/issues"
   },
   "dependencies": {
-    "apicache": "^0.8.4",
-    "cors": "^2.8.1",
-    "dotenv": "^4.0.0",
+    "apicache": "0.8.4",
+    "cors": "2.8.1",
     "expandjs": "1.1.0",
-    "express": "^4.15.2",
-    "express-rate-limit": "^2.6.0",
-    "helmet": "^3.5.0",
-    "lol-riot-api-module": "^2.0.0",
-    "prompt": "^1.0.0",
-    "redis": "^2.7.1"
+    "express": "4.15.2",
+    "express-rate-limit": "2.6.0",
+    "fs-extra": "3.0.1",
+    "helmet": "3.5.0",
+    "inquirer": "3.0.6",
+    "lol-riot-api-module": "^3.0.0",
+    "redis": "2.7.1"
   },
   "keywords": [
     "league of legends",
@@ -44,7 +41,7 @@
     "riot games"
   ],
   "scripts": {
-    "start": "node app.js",
+    "start": "node index.js",
     "resetconfig": "node resetconfig.js"
   }
 }

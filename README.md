@@ -7,38 +7,12 @@ lol-riot-api is installable via:
 - [GitHub](https://github.com/Pupix/lol-riot-api) `git clone https://github.com/Pupix/lol-riot-api.git`
 - [npm](https://www.npmjs.com/): `npm install lol-riot-api`
 
-## Cache / Reds
-The api use Redis and api-cache to cache the data.
-If you don't want to use Redis change the following line from
-
-```js
-apicache.options({
-    redisClient: redis.createClient()
-}, {
-    statusCodes: {
-        exclude: [404, 429, 500],
-        include: [200, 304]
-    }
-}).middleware;
-```
-
-to
-
-```js
-apicache.options({
-    statusCodes: {
-        exclude: [404, 429, 500],
-        include: [200, 304]
-    }
-    });
-```
-
 ## Getting started
 To start the API server run the following command:
 ```js
-node app.js
+node run start
 ```
-You will have to do a **one time** configuration to be able to use the API. At the prompt you will be asked for the default API `key` to be used for the calls, the `port` on which the API will run and the default `region` to be used for the API calls.
+You will have to do a **one time** configuration to be able to use the API. At the prompt you will be asked for the default API `key` to be used for the calls, the `port` on which the API will run, the default `region` to be used for the API calls and the caching strategy.
 
 ### Resetting the configuration
 You can change the provided API configuration at any time, simply by running:
@@ -52,16 +26,22 @@ The API's calls are mapped to various API methods from [Riot Game's documentatio
 
 ### Routes
 
-* [`/featuredGames`](#/featuredGames)
+* [`/account/:accountId`](#/account/:accountId)
+* [`/account/:accountId/matchlist`](#/account/:accountId/matchlist)
+* [`/account/:accountId/matchlist/recent`](#/account/:accountId/matchlist/recent)
+* [`/champions`](#/champions)
+* [`/champions/:id`](#/champions/:id)
+* [`/featured-games`](#/featured-games)
 * [`/leagues/challenger`](#/leagues/challenger)
 * [`/leagues/master`](#/leagues/master)
-* [`/match/:id`](#/match/:id)
+* [`/matches/:id`](#/matches/:id)
+* [`/matches/:matchId/timeline`](#/matches/:matchId/timeline)
 * [`/static/champions`](#/static/champions)
 * [`/static/champions/:id`](#/static/champions/:id)
 * [`/static/items`](#/static/items)
 * [`/static/items/:id`](#/static/items/:id)
 * [`/static/languages`](#/static/languages)
-* [`/static/languageStrings`](#/static/languageStrings)
+* [`/static/language-strings`](#/static/language-strings)
 * [`/static/maps`](#/static/maps)
 * [`/static/masteries`](#/static/masteries)
 * [`/static/masteries/:id`](#/static/masteries/:id)
@@ -73,26 +53,79 @@ The API's calls are mapped to various API methods from [Riot Game's documentatio
 * [`/static/spells/:id`](#/static/spells/:id)
 * [`/static/versions`](#/static/versions)
 * [`/status`](#/status)
-* [`/status/:region`](#/status/:region)
-* [`/summoner/:id/activeGame`](#/summoner/:id/activeGame)
-* [`/summoner/:id/matchList`](#/summoner/:id/matchList)
-* [`/summoner/:id/recentGames`](#/summoner/:id/recentGames)
-* [`/summoner/:id/championMastery`](#/summoner/:id/championMastery)
-* [`/summoner/:id/championMastery/score`](#/summoner/:id/championMastery/score)
-* [`/summoner/:id/championMastery/:champId`](#/summoner/:id/championMastery/:champId)
+* [`/summoner/:summonerId/activeGame`](#/summoner/:summonerId/activeGame)
+* [`/summoner/:summonerId/championMastery`](#/summoner/:summonerId/championMastery)
+* [`/summoner/:summonerId/championMastery/score`](#/summoner/:summonerId/championMastery/score)
+* [`/summoner/:summonerId/championMastery/:championId`](#/summoner/:summonerId/championMastery/:championId)
+* [`/summoner`](#/summoner)
 * [`/summoner/:id`](#/summoner/:id)
-* [`/summoner/:id/clear`](#/summoner/:id/clear)
-* [`/summoner/by-name/:name`](#/summoner/by-name/:name)
-* [`/summoner/:id/league`](#/summoner/:id/league)
-* [`/summoner/:id/league/entry`](#/summoner/:id/league/entry)
-* [`/summoner/:id/masteries`](#/summoner/:id/masteries)
-* [`/summoner/:id/name`](#/summoner/:id/name)
-* [`/summoner/:id/runes`](#/summoner/:id/runes)
+* [`/summoner/:summonerId/leagues`](#/summoner/:summonerId/leagues)
+* [`/summoner/:summonerId/leagues/positions`](#/summoner/:summonerId/leagues/positions)
+* [`/summoner/:summonerId/masteries`](#/summoner/:summonerId/masteries)
+* [`/summoner/:summonerId/runes`](#/summoner/:summonerId/runes)
+---------------------------------------
+
+<a name="/account/:accountId" />
+### /account/:accountId
+
+Retrieves a summoner by `accountId`.
 
 ---------------------------------------
 
-<a name="/featuredGames" />
-### /featuredGames
+<a name="/account/:accountId/matchlist" />
+### /account/:accountId/matchlist
+
+Retrieves matchlist by `accountId`.
+
+**Querystring parameters**
+
+* `season` - Comma-separated list of season ids to use for filtering matchlist.
+
+* `queue` - Comma-separated list of ranked queue types to use for filtering matchlist.
+  * *Possible values:* **RANKED_SOLO_5x5 | RANKED_FLEX_SR | RANKED_FLEX_TT**.
+
+* `beginIndex` - The begin index to use for fetching games.
+  * *Possible values:* **Any positive natural number**.
+
+* `beginTime` - The begin time to use for fetching games specified as epoch milliseconds.
+  * *Possible values:* **Any positive natural number**.
+
+* `endTime` - The end time to use for fetching games specified as epoch milliseconds.
+  * *Possible values:* **Any positive natural number**.
+
+* `endIndex` - The end index to use for fetching games.
+  * *Possible values:* **Any positive natural number**.
+
+---------------------------------------
+
+<a name="/account/:accountId/matchlist/recent" />
+### /account/:accountId/matchlist/recent
+
+Retrieves matchlist for last 20 matches played on given `accountId`.
+
+---------------------------------------
+
+<a name="/champions" />
+### /champions
+
+Retrieves the status of all champions.
+
+**Querystring parameters**
+
+* `freeToPlay` - Filter param to revireve only free to play champions.
+    * *Possible values:* **Anything**
+
+---------------------------------------
+
+<a name="/champions/id" />
+### /champions/:id
+
+Retrieves the status of given champion `id`.
+
+---------------------------------------
+
+<a name="/featured-games" />
+### /featured-games
 
 Retrieves a list of featured games.
 
@@ -105,8 +138,8 @@ Retrieves the challenger tier leagues
 
 **Querystring parameters**
 
-* `type` - The queue type.
-  * *Possible values:* **RANKED_SOLO_5x5 | RANKED_TEAM_3x3 | RANKED_TEAM_5x5**.
+* `queue` - The queue type.
+  * Possible values: *"RANKED_SOLO_5x5" | "RANKED_FLEX_SR" | "RANKED_FLEX_TT"*
 
 ---------------------------------------
 
@@ -117,21 +150,23 @@ Retrieves the master tier leagues
 
 **Querystring parameters**
 
-* `type` - The queue type.
-  * *Possible values:* **RANKED_SOLO_5x5 | RANKED_TEAM_3x3 | RANKED_TEAM_5x5**.
+* `queue` - The queue type.
+  * Possible values: *"RANKED_SOLO_5x5" | "RANKED_FLEX_SR" | "RANKED_FLEX_TT"*
 
 ---------------------------------------
 
-<a name="/match/:id" />
-### /match/:id
+<a name="/matches/:id" />
+### /matches/:id
 
-Retrieves a match by its id.
+Retrieves a match by its `id`.
 
-**Querystring parameters**
+---------------------------------------
 
-* `includeTimeline` - Flag indicating whether or not to include match timeline data.
-    * *Possible values:* **Anything**.
-    *
+<a name="/matches/:matchId/timeline" />
+### /matches/:matchId/timeline
+
+Retrieves a match's timeline by `matchId`.
+
 ---------------------------------------
 
 <a name="/static/champions" />
@@ -147,8 +182,8 @@ Retrieves champion list.
 
 * `dataById` - If specified as true, the returned data map will use the champions' id as the keys. If not specified or specified as false, the returned data map will use the champions' keys instead.
 
-* `champData` - Tags to return additional data. Only *type*, *version*, *data*, *id*, *key*, *name*, and *title* are returned by default if this parameter isn't specified. To return all additional data, use the tag **all**.
-  * *Possible values:* **all** | **allytips** | **altimages** | **blurb** | **enemytips** | **image** | **info** | **lore** | **partype** | **passive** | **recommended** | **skins** | **spells** | **stats** | **tags**.
+* `champData` - Tags to return additional data. Only id, key, name, and title are returned by default if this parameter isn't specified. To return all additional data, use the tag 'all'.
+  * Possible values: *"all" | "allytips" | "altimages" | "blurb" | "enemytips" | "image" | "info" | "lore" | "partype" | "passive" | "recommended" | "skins" | "spells" | "stats" | "tags"*
 
 ---------------------------------------
 
@@ -163,8 +198,8 @@ Retrieves a champion by its id.
 
 * `version` - Data dragon version for returned data. If not specified, the latest version for the region is used. List of valid versions can be obtained from the /versions endpoint.
 
-* `champData` - Tags to return additional data. Only *id*, *key*, *name*, and *title* are returned by default if this parameter isn't specified. To return all additional data, use the tag **all**.
-  * *Possible values:* **all** | **allytips** | **altimages** | **blurb** | **enemytips** | **image** | **info** | **lore** | **partype** | **passive** | **recommended** | **skins** | **spells** | **stats** | **tags**.
+* `champData` - Tags to return additional data. Only id, key, name, and title are returned by default if this parameter isn't specified. To return all additional data, use the tag 'all'.
+  * Possible values: *"all" | "allytips" | "altimages" | "blurb" | "enemytips" | "image" | "info" | "lore" | "partype" | "passive" | "recommended" | "skins" | "spells" | "stats" | "tags"*
 
 ---------------------------------------
 
@@ -179,8 +214,8 @@ Retrieves a list of all items in the game.
 
 * `version` - Data dragon version for returned data. If not specified, the latest version for the region is used. List of valid versions can be obtained from the /versions endpoint.
 
-* `itemListData` - Tags to return additional data. Only *type*, *version*, *basic*, *data*, *id*, *name*, *plaintext*, *group*, and *description* are returned by default if this parameter isn't specified. To return all additional data, use the tag **all**.
-  **Possible values:* ***all | colloq | consumeOnFull | consumed | depth | from | gold | groups | hideFromAll | image | inStore | into | maps | requiredChampion | sanitizedDescription | specialRecipe | stacks | stats | tags | tree**.
+* `itemData` - Tags to return additional data. Only id, name, plaintext, group, and description are returned by default if this parameter isn't specified. To return all additional data, use the tag 'all'.
+  * Possible values: *"all" | "colloq" | "consumeOnFull" | "consumed" | "depth" | "effect" | "from" | "gold" | "hideFromAll" | "image" | "inStore" | "into" | "maps" | "requiredChampion" | "sanitizedDescription" | "specialRecipe" | "stacks" | "stats" | "tags"*
 
 ---------------------------------------
 
@@ -195,8 +230,8 @@ Retrieves an item by `id`.
 
 * `version` - Data dragon version for returned data. If not specified, the latest version for the region is used. List of valid versions can be obtained from the /versions endpoint.
 
-* `itemData` - Tags to return additional data. Only id, name, plaintext, group, and description are returned by default if this parameter isn't specified. To return all additional data, use the tag **all**.
-  * *Possible values:* **all | colloq | consumeOnFull | consumed | depth | from | gold | hideFromAll | image | inStore | into | maps | requiredChampion | sanitizedDescription | specialRecipe | stacks | stats | tags**.
+* `itemData` - Tags to return additional data. Only id, name, plaintext, group, and description are returned by default if this parameter isn't specified. To return all additional data, use the tag 'all'.
+  * Possible values: *"all" | "colloq" | "consumeOnFull" | "consumed" | "depth" | "effect" | "from" | "gold" | "hideFromAll" | "image" | "inStore" | "into" | "maps" | "requiredChampion" | "sanitizedDescription" | "specialRecipe" | "stacks" | "stats" | "tags"*
 
 ---------------------------------------
 
@@ -205,10 +240,16 @@ Retrieves an item by `id`.
 
 Retrieves supported languages data.
 
+**Querystring parameters**
+
+* `locale` - Locale code for returned data (e.g., en_US, es_ES). If not specified, the default locale for the region is used.
+
+* `version` - Data dragon version for returned data. If not specified, the latest version for the region is used. List of valid versions can be obtained from the /versions endpoint.
+
 ---------------------------------------
 
-<a name="/static/languageStrings" />
-### /static/languageStrings
+<a name="/static/language-strings" />
+### /static/language-strings
 
 Retrieves language string data.
 
@@ -244,8 +285,8 @@ Retrieves the masteries list.
 
 * `version` - Data dragon version for returned data. If not specified, the latest version for the region is used. List of valid versions can be obtained from the /versions endpoint.
 
-* `masteryListData` - Tags to return additional data. Only type, version, data, id, name, and description are returned by default if this parameter isn't specified. To return all additional data, use the tag **all**.
-  * *Possible values:* **all | image | masteryTree | prereq | ranks | sanitizedDescription | tree**.
+* `masteryData` - Tags to return additional data. Only id, name, and description are returned by default if this parameter isn't specified. To return all additional data, use the tag 'all'
+  * Possible values: *"all" | "image" | "masteryTree" | "prereq" | "ranks" | "sanitizeDescription"*
 
 ---------------------------------------
 
@@ -260,8 +301,8 @@ Retrieves a mastery item by `id`.
 
 * `version` - Data dragon version for returned data. If not specified, the latest version for the region is used. List of valid versions can be obtained from the /versions endpoint.
 
-* `masteryData` - Tags to return additional data. Only id, name, and description are returned by default if this parameter isn't specified. To return all additional data, use the tag **all**.
-  * *Possible values:* **all | image | masteryTree | prereq | ranks | sanitizedDescription**.
+* `masteryData` - Tags to return additional data. Only id, name, and description are returned by default if this parameter isn't specified. To return all additional data, use the tag 'all'
+  * Possible values: *"all" | "image" | "masteryTree" | "prereq" | "ranks" | "sanitizeDescription"*
 
 ---------------------------------------
 
@@ -270,12 +311,24 @@ Retrieves a mastery item by `id`.
 
 Retrieves profile icons data.
 
+**Querystring parameters**
+
+* `locale` - Locale code for returned data (e.g., en_US, es_ES). If not specified, the default locale for the region is used.
+
+* `version` - Data dragon version for returned data. If not specified, the latest version for the region is used. List of valid versions can be obtained from the /versions endpoint.
+
 ---------------------------------------
 
 <a name="/static/realms" />
 ### /static/realms
 
 Retrieves realm data.
+
+**Querystring parameters**
+
+* `locale` - Locale code for returned data (e.g., en_US, es_ES). If not specified, the default locale for the region is used.
+
+* `version` - Data dragon version for returned data. If not specified, the latest version for the region is used. List of valid versions can be obtained from the /versions endpoint.
 
 ---------------------------------------
 
@@ -290,8 +343,8 @@ Retrieves all runes in game.
 
 * `version` - Data dragon version for returned data. If not specified, the latest version for the region is used. List of valid versions can be obtained from the /versions endpoint.
 
-* `runeListData` - Tags to return additional data. Only *id*, *key*, *name*, *description*, and *summonerLevel* are returned by default if this parameter isn't specified. To return all additional data, use the tag **all**.
-  * *Possible values:* **all | basic | colloq | consumeOnFull | consumed | depth | from | gold | hideFromAll | image | inStore | into | maps | requiredChampion | sanitizedDescription | specialRecipe | stacks | stats | tags**.
+* `runeData` - Tags to return additional data. Only id, name, rune, and description are returned by default if this parameter isn't specified. To return all additional data, use the tag 'all'.
+  * Possible values: *"all" | "colloq" | "consumeOnFull" | "consumed" | "depth" | "from" | "gold" | "hideFromAll" | "image" | "inStore" | "into" | "maps" | "requiredChampion" | "sanitizedDescription" | "specialRecipe" | "stacks" | "stats" | "tags"*
 
 ---------------------------------------
 
@@ -306,8 +359,8 @@ Retrieves a rune by `id`.
 
 * `version` - Data dragon version for returned data. If not specified, the latest version for the region is used. List of valid versions can be obtained from the /versions endpoint.
 
-* `runeData` - Tags to return additional data. Only *id*, *key*, *name*, *description*, and *summonerLevel* are returned by default if this parameter isn't specified. To return all additional data, use the tag **all**.
-  * *Possible values:* **all | colloq | consumeOnFull | consumed | depth | from | gold | hideFromAll | image | inStore | into | maps | requiredChampion | sanitizedDescription | specialRecipe | stacks | stats | tags**.
+* `runeData` - Tags to return additional data. Only id, name, rune, and description are returned by default if this parameter isn't specified. To return all additional data, use the tag 'all'.
+  * Possible values: *"all" | "colloq" | "consumeOnFull" | "consumed" | "depth" | "from" | "gold" | "hideFromAll" | "image" | "inStore" | "into" | "maps" | "requiredChampion" | "sanitizedDescription" | "specialRecipe" | "stacks" | "stats" | "tags"*
 
 ---------------------------------------
 
@@ -325,8 +378,8 @@ Retrieves all summoner spells in game.
 * `dataById` - If specified, the returned data map will use the spells' id as the keys. If not specified or specified as false, the returned data map will use the spells' keys instead.
     * *Possible values:* **Anything**
 
-* `spellData` - Tags to return additional data. Only *id*, *key*, *name*, *description*, and *summonerLevel* are returned by default if this parameter isn't specified. To return all additional data, use the tag **all**.
-  * *Possible values:* **all | cooldown | cooldownBurn | cost | costBurn | costType | effect | effectBurn | image | key | leveltip | maxrnk | modes | range | rangeBurn | resource | sanitizedDescription | sanitizedTooltip | tooltip | vars**.
+* `spellData` - Tags to return additional data. Only type, version, data, id, key, name, description, and summonerLevel are returned by default if this parameter isn't specified. To return all additional data, use the tag 'all'.
+  * Possible values: *"all" | "cooldown" | "cooldownBurn" | "cost" | "costBurn" | "costType" | "effect" | "effectBurn" | "image" | "key" | "leveltip" | "maxrank" | "modes" | "range" | "rangeBurn" | "resource" | "sanitizedDescription" | "sanitizedTooltip" | "tooltip" | "vars"*
 
 
 ---------------------------------------
@@ -342,8 +395,8 @@ Retrieves a summoner spell by `id`.
 
 * `version` - Data dragon version for returned data. If not specified, the latest version for the region is used. List of valid versions can be obtained from the /versions endpoint.
 
-* `spellData` - Tags to return additional data. Only *id*, *key*, *name*, *description*, and *summonerLevel* are returned by default if this parameter isn't specified. To return all additional data, use the tag **all**.
-  * *Possible values:* **all | cooldown | cooldownBurn | cost | costBurn | costType | effect | effectBurn | image | key | leveltip | maxrnk | modes | range | rangeBurn | resource | sanitizedDescription | sanitizedTooltip | tooltip | vars**.
+* `spellData` - Tags to return additional data. Only type, version, data, id, key, name, description, and summonerLevel are returned by default if this parameter isn't specified. To return all additional data, use the tag 'all'.
+* Possible values: *"all" | "cooldown" | "cooldownBurn" | "cost" | "costBurn" | "costType" | "effect" | "effectBurn" | "image" | "key" | "leveltip" | "maxrank" | "modes" | "range" | "rangeBurn" | "resource" | "sanitizedDescription" | "sanitizedTooltip" | "tooltip" | "vars"*
 
 ---------------------------------------
 
@@ -361,136 +414,78 @@ Retrieves the list of available regions.
 
 ---------------------------------------
 
-<a name="/summoner/:id/activeGame" />
-### /summoner/:id/currentGame
+<a name="/summoner" />
+### /summoner
 
-Retrieves active game information for the given summoner `id`.
-
----------------------------------------
-
-<a name="/summoner/:id/matchList" />
-### /summoner/:id/matchList
-
-Retrieves match history by summoner `id`.
+Retrieves a summoner  based on `name`, `id` or `accountId`.
 
 **Querystring parameters**
 
-* `championid` - Comma-separated list of champion id to use for fetching games.
+* `name` - The name of the summoner
 
-* `rankedQueues` - Comma-separated list of ranked queue types to use for fetching games. Non-ranked queue types will be ignored.
-  * *Possible values:* **RANKED_SOLO_5x5 | RANKED_TEAM_3x3 | RANKED_TEAM_5x5**.
+* `id` - The Id  of the summoner
 
-* `beginTime` - The begin time to use for fetching games specified as epoch milliseconds.
-  * *Possible values:* **Any positive natural number**.
-
-* `endTime` - The end time to use for fetching games specified as epoch milliseconds.
-  * *Possible values:* **Any positive natural number**.
-
-* `beginIndex` - The begin index to use for fetching games.
-  * *Possible values:* **Any positive natural number**.
-
-* `endIndex` - The end index to use for fetching games.
-  * *Possible values:* **Any positive natural number**.
-
----------------------------------------
-
-<a name="/summoner/:id/recentGames" />
-### /summoner/:id/recentGames
-
-Retrieves player stats summaries by summoner `id`.
-
-**Querystring parameters**
-
-* `season` - If specified, stats for the given season are returned. Otherwise, stats for the current season are returned.
-  * *Possible values:* **SEASON3 | SEASON2014 | SEASON2015**.
-
----------------------------------------
-
-<a name="/summoner/:id/statsSummary" />
-### /summoner/:id/statsSummary
-
-Retrieves player stats summaries by summoner `id`.
-
----------------------------------------
-
-<a name="/summoner/:id/championMastery" />
-### /summoner/:id/championMastery
-
-Retrieves all champion mastery entries by summoner `id`.
-
----------------------------------------
-
-<a name="/summoner/:id/championMastery/score" />
-### /summoner/:id/championMastery/score
-
-Retrieves the total champion mastery score by summoner `id`.
-
----------------------------------------
-
-<a name="/summoner/:id/championMastery/:champId" />
-### /summoner/:id/championMastery/:champId
-
-Retrieves a champion mastery entry by summoner `id` and `champId`.
+* `accountId` - The account id  of the summoner
 
 ---------------------------------------
 
 <a name="/summoner/:id" />
 ### /summoner/:id
 
-Retrieves summoner objects mapped by summoner *id* for a given list of summoner `id`.
-
-The `id` passed must be comma-separated. Maximum allowed at once is 40.
+Retrieves a summoner by `id`.
 
 ---------------------------------------
 
-<a name="/summoner/:id/clear" />
-### /summoner/:id/clear
+<a name="/summoner/:summonerId/activeGame" />
+### /summoner/:summonerId/currentGame
 
-Clear the cache by summoner *id* for a given summoner `id`.
-
----------------------------------------
-
-<a name="/summoner/by-name/:name" />
-### /summoner/by-name/:name
-
-Retrieves summoner objects mapped by **standardized summoner name** for a given list of summoner `name`.
-
-A **standardized summoner name** is the summoner name in all lower case and with spaces removed. The API will also accept **standardized summoner name** as valid parameters, although they are not required.
-
-The `name` or `standardized summoner name` passed must be comma-separated. Maximum allowed at once is 40.
+Retrieves active game information for the given `summonerId`.
 
 ---------------------------------------
 
-<a name="/summoner/:id/league" />
-### /summoner/:id/league
+<a name="/summoner/:summonerId/championMastery" />
+### /summoner/:summonerId/championMastery
 
-Retrieves leagues mapped by summoner *id* for a given list of summoner `id`.
-
-The `id` passed must be comma-separated. Maximum allowed at once is 10.
+Retrieves all champion mastery entries by `summonerId`.
 
 ---------------------------------------
 
-<a name="/summoner/:id/league/entry" />
-### /summoner/:id/league/entry
+<a name="/summoner/:summonerId/championMastery/:championId" />
+### /summoner/:summonerId/championMastery/:championId
 
-Retrieves league entries mapped by summoner *id* for a given list of summoner `id`.
-
-The `id` passed must be comma-separated. Maximum allowed at once is 10.
+Retrieves a champion mastery entry by `summonerId` and `championId`.
 
 ---------------------------------------
 
-<a name="/summoner/:id/masteries" />
-### /summoner/:id/masteries
+<a name="/summoner/:summonerId/championMastery/score" />
+### /summoner/:summonerId/championMastery/score
 
-Retrieves mastery pages mapped by summoner *id* for a given list of summoner `id`.
-
-The `id` must be comma-separated. Maximum allowed at once is 40.
+Retrieves the total champion mastery score by `summonerId`.
 
 ---------------------------------------
 
-<a name="/summoner/:id/runes" />
-### /summoner/:id/runes
+<a name="/summoner/:summonerId/league" />
+### /summoner/:summonerId/leagues
 
-Retrieves rune pages mapped by summoner *id* for a given list of summoner `id`.
+Retrieves leagues in all queues for a given `summonerId`.
 
-The `id` must be comma-separated. Maximum allowed at once is 40.
+---------------------------------------
+
+<a name="/summoner/:summonerId/league/entry" />
+### /summoner/:summonerId/leagues/positions
+
+Retrieves league positions in all queues for a given `summonerId`.
+
+---------------------------------------
+
+<a name="/summoner/:summonerId/masteries" />
+### /summoner/:summonerId/masteries
+
+Get mastery pages for a given `summonerId`.
+
+---------------------------------------
+
+<a name="/summoner/:summonerId/runes" />
+### /summoner/:summonerId/runes
+
+Get rune pages for a given `summonerId`.
