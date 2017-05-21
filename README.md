@@ -63,6 +63,8 @@ The API's calls are mapped to various API methods from [Riot Game's documentatio
 * [`/summoner/:summonerId/leagues/positions`](#/summoner/:summonerId/leagues/positions)
 * [`/summoner/:summonerId/masteries`](#/summoner/:summonerId/masteries)
 * [`/summoner/:summonerId/runes`](#/summoner/:summonerId/runes)
+* [`/cache/clearAccount/:accountId`](#/cache/clearAccount/:accountId)
+* [`/cache/clearSummoner/:summonerId`](#/cache/clearSummoner/:summonerId)
 ---------------------------------------
 
 <a name="/account/:accountId" />
@@ -489,3 +491,19 @@ Get mastery pages for a given `summonerId`.
 ### /summoner/:summonerId/runes
 
 Get rune pages for a given `summonerId`.
+
+---------------------------------------
+
+<a name="/cache/clearAccount/:accountId" />
+### /cache/clearAccount/:accountId
+
+Clears the cache for a given `accountId`.
+
+---------------------------------------
+
+<a name="/cache/clearSummoner/:summonerId" />
+### /cache/clearSummoner/:summonerId
+
+Clears the cache for a given `summonerId`.
+
+---------------------------------------
